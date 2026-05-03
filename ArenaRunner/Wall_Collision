@@ -1,0 +1,58 @@
+package com.renan.jogo;
+
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+public class Main extends ApplicationAdapter {
+
+    private OrthographicCamera camera;
+    private ShapeRenderer shape;
+
+    private float x = 0;
+    private float y = 0;
+    private float speed = 200;
+    float playerWidth = 50;
+    float playerHeight = 50;
+    float screenWidth = 800;
+    float screenHeight = 600;
+
+    @Override
+    public void create() {
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 600);
+
+        shape = new ShapeRenderer();
+    }
+
+    @Override
+    public void render() {
+        float delta = Gdx.graphics.getDeltaTime();
+
+        // TRAVAR O PLAYER NA TELA
+        x = Math.max(0, Math.min(x, screenWidth - playerWidth));
+        y = Math.max(0, Math.min(y, screenHeight - playerHeight));
+
+        // Movimento
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) y += speed * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) y -= speed * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) x -= speed * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) x += speed * delta;
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        shape.setProjectionMatrix(camera.combined);
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.rect(x, y, 50, 50); // player (quadrado)
+        shape.end();
+    }
+
+    @Override
+    public void dispose() {
+        shape.dispose();
+    }
+}
