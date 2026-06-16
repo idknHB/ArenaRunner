@@ -7,8 +7,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Player {
     float x , y;
     float speed = 200;
-    float hp = 100;
+    float maxHp = 100;
+    float hp = maxHp;
+    float maxStamina = 100;
+    float stamina = maxStamina;
     boolean isAlive = true;
+
+    //variaveis ROLL
+    float rollSpeed = 450f;
+    float rollDuration = 0.25f;
+    float rollTimer = 0f;
+
+    boolean invulnerable = false;
+
+    float directionX;
+    float directionY;
 
     float newX = x;
     float newY = y;
@@ -16,27 +29,136 @@ public class Player {
     float width = 50;
     float height = 50 ;
 
+    PlayerState state = PlayerState.IDLE;
+
     public Player(float x, float y){
         this.x = x;
         this.y = y;
     }
 
     public void update(float delta){
-        if(!isAlive) return;
+        if(!isAlive) {
+            state = PlayerState.DEAD;
+            return;
+        }
+        switch (state) {
 
-        if(canMove(newX,y))x = newX;
-        if(canMove(x, newY)) y = newY;
+            case IDLE:
+                idle();
+                break;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) newY += speed * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) newY -= speed * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) newX -= speed * delta;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) newX += speed * delta;
+            case MOVE:
+                move(delta);
+                break;
 
+            case ROLL:
+                updateRoll(delta);
+                break;
+
+            default:
+                break;
+        }
         if(hp <= 0){
             isAlive = false;
         }
 
         boolean isAttacking = Gdx.input.isKeyPressed(Input.Keys.E);
+    }
+
+    private void updateRoll(float delta) {
+        x += directionX * rollSpeed * delta;
+        y += directionY * rollSpeed * delta;
+
+        rollTimer -= delta;
+
+        if(rollTimer <= 0) {
+
+            invulnerable = false;
+
+            if (isMoving()) {
+                state = PlayerState.MOVE;
+            } else {
+                state = PlayerState.IDLE;
+            }
+        }
+    }
+
+    private void move(float delta){
+
+
+        if(!isMoving()){
+            state = PlayerState.IDLE;
+            return;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            startRoll();
+            return;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.W)){
+            y += speed * delta;
+            directionY = 1;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.S)){
+            y -= speed * delta;
+            directionY = -1;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.A)){
+            x -= speed * delta;
+            directionX = -1;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.D)){
+            x += speed * delta;
+            directionX = 1;
+        }
+
+        float length = (float)Math.sqrt(directionX * directionX + directionY * directionY);
+
+        if(length != 0){
+            directionX /= length;
+            directionY /= length;
+        }
+    }
+
+    private void idle() {
+
+        if(isMoving()){
+            state = PlayerState.MOVE;
+            return;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            startRoll();
+        }
+    }
+
+    private void startRoll(){
+
+        state = PlayerState.ROLL;
+
+        rollTimer = rollDuration;
+
+        invulnerable = true;
+
+    }
+    private boolean isMoving(){
+
+        return
+                Gdx.input.isKeyPressed(Input.Keys.W) ||
+                        Gdx.input.isKeyPressed(Input.Keys.A) ||
+                        Gdx.input.isKeyPressed(Input.Keys.S) ||
+                        Gdx.input.isKeyPressed(Input.Keys.D);
+
+    }
+
+    public void takeDamage(float damage){
+        if(invulnerable) return;
+
+        hp -= damage;
     }
 
     public void attack(Enemy enemy){

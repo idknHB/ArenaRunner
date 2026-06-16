@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Enemy {
     float x, y;
     float speed = 100;
-    float hp = 80;
+    float maxHp = 80;
+    float hp = maxHp;
     boolean isAlive = true;
     float respawnTimer = 0;
 
@@ -42,7 +43,7 @@ public class Enemy {
             if(canMove(newX,y))x = newX;
             if(canMove(x,newY))y = newY;
         }else if(attackCooldown <=0 && isAlive){
-            player.hp -= 10;
+            player.takeDamage(10);
             attackCooldown = 1f;
             System.out.println("Enemy hit");
 

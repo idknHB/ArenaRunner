@@ -14,12 +14,13 @@ public class Main extends ApplicationAdapter {
 
     Player player;
     Enemy enemy;
-
+    HUD hud;
     private float deathTimer = 0;
     boolean isGameOver = false;
 
     @Override
     public void create() {
+        hud = new HUD();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
 
@@ -31,19 +32,34 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            player.hp -= 10;
+            System.out.println(player.hp);
+        }
+
         float delta = Gdx.graphics.getDeltaTime();
 
+        // Atualiza lógica
         player.update(delta);
         enemy.update(delta, player);
 
+        // Limpa a tela
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shape.setProjectionMatrix(camera.combined);
+
+        // Começa a desenhar
         shape.begin(ShapeRenderer.ShapeType.Filled);
 
+        // Mundo
         player.draw(shape);
         enemy.draw(shape);
 
+        // Interface
+        hud.draw(shape, player, enemy);
+
+        // Finaliza desenho
         shape.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.E) && player.isAlive) {
