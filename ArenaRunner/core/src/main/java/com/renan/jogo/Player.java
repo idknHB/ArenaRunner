@@ -66,8 +66,10 @@ public class Player {
     }
 
     private void updateRoll(float delta) {
-        x += directionX * rollSpeed * delta;
-        y += directionY * rollSpeed * delta;
+        float dx = directionX * rollSpeed * delta;
+        float dy = directionY * rollSpeed * delta;
+
+        tryMove(dx, dy);
 
         rollTimer -= delta;
 
@@ -97,22 +99,22 @@ public class Player {
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.W)){
-            y += speed * delta;
+            tryMove (0,speed * delta);
             directionY = 1;
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.S)){
-            y -= speed * delta;
+            tryMove (0,- speed * delta);
             directionY = -1;
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.A)){
-            x -= speed * delta;
+            tryMove (-speed * delta, 0 );
             directionX = -1;
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.D)){
-            x += speed * delta;
+            tryMove (speed * delta, 0);
             directionX = 1;
         }
 
@@ -173,6 +175,19 @@ public class Player {
         }
     }
 
+    public void tryMove(float dx, float dy){
+        float newX = x + dx;
+        float newY = y + dy;
+
+        if(canMove(newX, y)){
+            x = newX;
+        }
+
+        if(canMove(x, newY)){
+            y = newY;
+        }
+
+    }
     public boolean canMove(float newX, float newY){
         return newX  >= 0 && newX + width <= 800 && newY >= 0 && newY + height<= 600;
     }
@@ -180,7 +195,12 @@ public class Player {
     public void draw(ShapeRenderer shape){
         if(!isAlive) return;
 
-        shape.setColor(0,0,1,1);
-        shape.rect(x,y,width,height);
+        if(state == PlayerState.ROLL) {
+            shape.setColor(0.3f, 0.8f, 1, 1);
+            shape.rect(x, y, width - 4, height - 4);
+        }else {
+            shape.setColor(0, 0, 1, 1);
+            shape.rect(x, y, width, height);
+        }
     }
 }
