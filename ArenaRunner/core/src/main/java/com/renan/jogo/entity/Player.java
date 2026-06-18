@@ -1,8 +1,9 @@
-package com.renan.jogo;
+package com.renan.jogo.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.renan.jogo.PlayerState;
 
 public class Player {
     float x , y;
@@ -23,13 +24,71 @@ public class Player {
     float directionX;
     float directionY;
 
-    float newX = x;
-    float newY = y;
-
     float width = 50;
     float height = 50 ;
 
     PlayerState state = PlayerState.IDLE;
+
+    public float getX() {
+        return x;
+    }
+    public void setX(float x) {
+        this.x = x;
+    }
+    public float getY() {
+        return y;
+    }
+    public void setY(float y) {
+        this.y = y;
+    }
+    public float getSpeed() {
+        return speed;
+    }
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+    public float getMaxHp() {
+        return maxHp;
+    }
+    public void setMaxHp(float maxHp) {
+        this.maxHp = maxHp;
+    }
+    public float getHp() {
+        return hp;
+    }
+    public void setHp(float hp) {
+        this.hp = hp;
+    }
+    public float getMaxStamina() {
+        return maxStamina;
+    }
+    public void setMaxStamina(float maxStamina) {
+        this.maxStamina = maxStamina;
+    }
+    public float getStamina() {
+        return stamina;
+    }
+    public void setStamina(float stamina) {
+        this.stamina = stamina;
+    }
+    public boolean isAlive() {
+        return isAlive;
+    }
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+    public float getWidth() {
+        return width;
+    }
+    public void setWidth(float width) {
+        this.width = width;
+    }
+    public float getHeight() {
+        return height;
+    }
+    public void setHeight(float height) {
+        this.height = height;
+    }
 
     public Player(float x, float y){
         this.x = x;
@@ -161,6 +220,10 @@ public class Player {
         if(invulnerable) return;
 
         hp -= damage;
+
+        if(hp <= 0){
+            isAlive = false;
+        }
     }
 
     public void attack(Enemy enemy){
@@ -170,8 +233,7 @@ public class Player {
         float distance = (float)Math.sqrt(dx * dx + dy * dy);
 
         if(distance <= 75){
-            enemy.hp -= 30;
-            System.out.println("Player hit");
+            enemy.takeDamage(30);
         }
     }
 
@@ -191,6 +253,8 @@ public class Player {
     public boolean canMove(float newX, float newY){
         return newX  >= 0 && newX + width <= 800 && newY >= 0 && newY + height<= 600;
     }
+
+
 
     public void draw(ShapeRenderer shape){
         if(!isAlive) return;

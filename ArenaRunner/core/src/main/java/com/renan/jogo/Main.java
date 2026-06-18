@@ -6,6 +6,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.renan.jogo.entity.Enemy;
+import com.renan.jogo.entity.Player;
 
 public class Main extends ApplicationAdapter {
 
@@ -34,8 +36,7 @@ public class Main extends ApplicationAdapter {
     public void render() {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
-            player.hp -= 10;
-            System.out.println(player.hp);
+            player.takeDamage(10);
         }
 
         float delta = Gdx.graphics.getDeltaTime();
@@ -62,15 +63,15 @@ public class Main extends ApplicationAdapter {
         // Finaliza desenho
         shape.end();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E) && player.isAlive) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E) && player.isAlive()) {
             player.attack(enemy);
         }
 
-        if (enemy.isAlive) {
+        if (enemy.isAlive()) {
             enemy.update(delta, player);
         }
 
-        if (!player.isAlive && !isGameOver) {
+        if (!player.isAlive() && !isGameOver) {
             isGameOver = true;
             deathTimer = 2f; // 2 segundos
         }

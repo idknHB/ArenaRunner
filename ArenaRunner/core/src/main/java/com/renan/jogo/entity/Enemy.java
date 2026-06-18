@@ -1,4 +1,4 @@
-package com.renan.jogo;
+package com.renan.jogo.entity;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -15,6 +15,61 @@ public class Enemy {
 
     float attackRange = 60f;
     float attackCooldown = 0;
+
+    public float getX() {
+        return x;
+    }
+    public void setX(float x) {
+        this.x = x;
+    }
+    public float getY() {
+        return y;
+    }
+    public void setY(float y) {
+        this.y = y;
+    }
+    public float getSpeed() {
+        return speed;
+    }
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+    public float getMaxHp() {
+        return maxHp;
+    }
+    public void setMaxHp(float maxHp) {
+        this.maxHp = maxHp;
+    }
+    public float getHp() {
+        return hp;
+    }
+    public void setHp(float hp) {
+        this.hp = hp;
+    }
+    public boolean isAlive() {
+        return isAlive;
+    }
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+    public float getRespawnTimer() {
+        return respawnTimer;
+    }
+    public void setRespawnTimer(float respawnTimer) {
+        this.respawnTimer = respawnTimer;
+    }
+    public float getWidth() {
+        return width;
+    }
+    public void setWidth(float width) {
+        this.width = width;
+    }
+    public float getHeight() {
+        return height;
+    }
+    public void setHeight(float height) {
+        this.height = height;
+    }
 
     public Enemy(float x, float y){
         this.x = x;
@@ -45,8 +100,6 @@ public class Enemy {
         }else if(attackCooldown <=0 && isAlive){
             player.takeDamage(10);
             attackCooldown = 1f;
-            System.out.println("Enemy hit");
-
         }
 
         if (hp <= 0 && isAlive) {
@@ -89,6 +142,14 @@ public class Enemy {
 
     public boolean canMove(float newX, float newY){
         return newX  >= 0 && newX + width <= 800 && newY >= 0 && newY + height<= 600;
+    }
+    public void takeDamage(float damage){
+
+        hp -= damage;
+
+        if(hp <= 0){
+            isAlive = false;
+        }
     }
 
     public void draw(ShapeRenderer shape){

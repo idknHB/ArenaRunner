@@ -2,8 +2,8 @@ package com.renan.jogo;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.renan.jogo.Enemy;
-import com.renan.jogo.Player;
+import com.renan.jogo.entity.Enemy;
+import com.renan.jogo.entity.Player;
 
 public class HUD {
 
@@ -19,7 +19,7 @@ public class HUD {
         float width = 200;
         float height = 15;
 
-        float percent = player.hp/player.maxHp;
+        float percent = player.getHp()/player.getMaxHp();
 
         shape.setColor(Color.DARK_GRAY);
         shape.rect(20,560,width,height);
@@ -33,7 +33,7 @@ public class HUD {
         float width = 200;
         float height = 15;
 
-        float percent = player.stamina/player.maxStamina;
+        float percent = player.getStamina()/player.getMaxStamina();
 
         shape.setColor(Color.DARK_GRAY);
         shape.rect(20,535,width,height);
@@ -43,16 +43,16 @@ public class HUD {
     }
 
     private void drawEnemyHp(ShapeRenderer shape, Enemy enemy) {
-        if(!enemy.isAlive)
+        if(!enemy.isAlive())
             return;
 
         float width = 50;
         float height = 5;
 
-        float percent = enemy.hp/enemy.maxHp;
+        float percent = enemy.getHp()/enemy.getMaxHp();
 
-        float barX = enemy.x;
-        float barY = enemy.y + enemy.height + 8;
+        float barX = enemy.getX();
+        float barY = enemy.getY() + enemy.getHeight() + 8;
 
         shape.setColor(Color.DARK_GRAY);
         shape.rect(barX,barY,width,height);
