@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.renan.jogo.entity.Enemy;
 import com.renan.jogo.entity.Player;
+import com.renan.jogo.ui.HUD;
 
 public class Main extends ApplicationAdapter {
 

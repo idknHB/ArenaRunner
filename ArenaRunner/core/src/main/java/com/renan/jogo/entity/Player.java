@@ -3,7 +3,7 @@ package com.renan.jogo.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.renan.jogo.PlayerState;
+import com.renan.jogo.state.PlayerState;
 
 public class Player {
     float x , y;

@@ -1,4 +1,4 @@
-package com.renan.jogo;
+package com.renan.jogo.state;
 
 public enum PlayerState {
     IDLE,

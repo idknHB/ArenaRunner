@@ -1,4 +1,4 @@
-package com.renan.jogo;
+package com.renan.jogo.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
