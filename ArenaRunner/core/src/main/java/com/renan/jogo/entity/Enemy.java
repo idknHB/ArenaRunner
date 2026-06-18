@@ -1,6 +1,7 @@
 package com.renan.jogo.entity;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.renan.jogo.state.EnemyState;
 
 public class Enemy {
     float x, y;
@@ -15,6 +16,8 @@ public class Enemy {
 
     float attackRange = 60f;
     float attackCooldown = 0;
+
+    EnemyState state = EnemyState.CHASE;
 
     public float getX() {
         return x;
@@ -79,40 +82,66 @@ public class Enemy {
     int count;
 
     public void update(float delta, Player player){
-        if(!player.isAlive) return;
 
-        float dx = player.x - x;
-        float dy = player.y - y;
+        if(!player.isAlive()) return;
+
+        switch(state){
+
+            case CHASE:
+                updateChase(delta, player);
+                break;
+
+            case DEAD:
+                updateDead(delta, player);
+                break;
+        }
+    }
+
+    private void updateChase(float delta, Player player){
+
+        float dx = player.getX() - x;
+        float dy = player.getY() - y;
 
         float distance = (float)Math.sqrt(dx * dx + dy * dy);
 
         attackCooldown -= delta;
 
-        if(distance > attackRange && attackCooldown <=0){
+        if(distance > attackRange && attackCooldown <= 0){
+
             dx /= distance;
             dy /= distance;
 
             float newX = x + dx * speed * delta;
             float newY = y + dy * speed * delta;
 
-            if(canMove(newX,y))x = newX;
-            if(canMove(x,newY))y = newY;
-        }else if(attackCooldown <=0 && isAlive){
+            if(canMove(newX,y)) x = newX;
+            if(canMove(x,newY)) y = newY;
+
+        }else if(attackCooldown <= 0){
+
             player.takeDamage(10);
             attackCooldown = 1f;
         }
 
-        if (hp <= 0 && isAlive) {
+        if(hp <= 0){
+
             isAlive = false;
             respawnTimer = 2f;
-        }
+            state = EnemyState.DEAD;
 
-        if(!isAlive){
-            respawnTimer -= delta;
-            if(respawnTimer <= 0){
-                respawn(player);
-            }
-            return;
+        }
+    }
+
+    private void updateDead(float delta, Player player){
+
+        respawnTimer -= delta;
+
+        if(respawnTimer <= 0){
+
+            respawn(player);
+
+            state = EnemyState.CHASE;
+
         }
     }
 
@@ -131,7 +160,7 @@ public class Enemy {
         do {
             newX = (float)Math.random() * 800;
             newY = (float)Math.random() * 600;
-        } while (Math.hypot(newX - player.x, newY - player.y) < minDistance);
+        } while (Math.hypot(newX - player.getX(), newY - player.getY()) < minDistance);
 
         x = newX;
         y = newY;
