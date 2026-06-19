@@ -16,6 +16,10 @@ public class Enemy {
 
     float attackRange = 60f;
     float attackCooldown = 0;
+    float windupTimer = 0;
+    float recoveryTimer = 0;
+    float attackDuration = 0.5f;
+    float attackTimer = 0;
 
     EnemyState state = EnemyState.CHASE;
 
@@ -79,8 +83,6 @@ public class Enemy {
         this.y = y;
     }
 
-    int count;
-
     public void update(float delta, Player player){
 
         if(!player.isAlive()) return;
@@ -91,9 +93,58 @@ public class Enemy {
                 updateChase(delta, player);
                 break;
 
+            case WINDUP:
+                updateWindup(delta);
+                break;
+
+            case ATTACK:
+                updateAttack(delta,player);
+                break;
+
+            case RECOVERY:
+                updateRecovery(delta);
+                break;
+
             case DEAD:
                 updateDead(delta, player);
                 break;
+        }
+    }
+
+    private void updateAttack(float delta,Player player){
+        attackTimer -= delta;
+
+        if(attackTimer <=0){
+            float dx = x - player.getX();
+            float dy = y - player.getY();
+
+            float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+            if(distance <= attackRange){
+                player.takeDamage(10);
+            }
+
+            attackCooldown = 1f;
+            recoveryTimer = 0.3f;
+            state = EnemyState.RECOVERY;
+        }
+    }
+
+    private void updateRecovery(float delta){
+            recoveryTimer -= delta;
+
+            if(recoveryTimer <= 0){
+                state = EnemyState.CHASE;
+            }
+    }
+
+    private void updateWindup(float delta) {
+
+        windupTimer -= delta;
+
+        if(windupTimer <= 0){
+             state = EnemyState.ATTACK;
+             attackTimer=attackDuration;
         }
     }
 
@@ -119,8 +170,8 @@ public class Enemy {
 
         }else if(attackCooldown <= 0){
 
-            player.takeDamage(10);
-            attackCooldown = 1f;
+            state = EnemyState.WINDUP;
+            windupTimer = 0.5f;
         }
 
         if(hp <= 0){
@@ -143,14 +194,6 @@ public class Enemy {
             state = EnemyState.CHASE;
 
         }
-    }
-
-    public void respawn(){
-        x = (float)Math.random() * 750;
-        y = (float)Math.random() * 550;
-
-        hp = 80;
-        isAlive = true;
     }
 
     public void respawn(Player player) {
@@ -183,7 +226,25 @@ public class Enemy {
 
     public void draw(ShapeRenderer shape){
         if(!isAlive) return;
-        shape.setColor(1,0,0,1);
-        shape.rect(x,y,width,height);
+        switch(state){
+
+            case CHASE:
+                shape.setColor(1,0,0,1);
+                break;
+
+            case WINDUP:
+                shape.setColor(1,0.5f,0,1);
+                shape.rect(x - 4, y -4, width + 8, height + 8);
+                break;
+
+            case ATTACK:
+                shape.setColor(1,1,0,1);
+                shape.rect(x - 5, y - 5, width + 10, height + 10);
+                break;
+
+            default:
+                shape.setColor(1,0,0,1);
+        }
+        shape.rect(x, y, width, height);
     }
 }
